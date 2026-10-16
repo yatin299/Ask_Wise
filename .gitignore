@@ -1,0 +1,8 @@
+venv/
+__pycache__/
+*.pyc
+data/raw/
+*.whl
+.DS_Store
+data/processed/
+data/embeddings/train_embeddings.npy

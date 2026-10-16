@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AskWise – Ask better questions, reach the right experts</title>
+<meta name="description" content="Write your question, get instant feedback on how clear it is, and see which experts can best answer it.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0f1e; --card:rgba(255,255,255,.05); --border:rgba(255,255,255,.10);
+    --text:#e8ecf8; --muted:#8d96b5; --accent:#7c5cff; --accent2:#22d3ee;
+    --good:#34d399; --warn:#fbbf24; --bad:#fb7185;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+  .glow{position:fixed;border-radius:50%;filter:blur(120px);opacity:.35;z-index:0;pointer-events:none}
+  .g1{width:480px;height:480px;background:#7c5cff;top:-120px;left:-100px}
+  .g2{width:420px;height:420px;background:#22d3ee;bottom:-140px;right:-100px;opacity:.22}
+  nav{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:22px 6vw}
+  .logo{font-family:'Space Grotesk';font-weight:700;font-size:1.5rem;display:flex;gap:10px;align-items:center}
+  .logo i{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-style:normal;font-size:1.1rem}
+  nav span{color:var(--muted);font-size:.9rem}
+  main{position:relative;z-index:2;max-width:1180px;margin:0 auto;padding:10px 6vw 80px}
+  .hero{text-align:center;margin:20px 0 38px}
+  h1{font-family:'Space Grotesk';font-size:clamp(2rem,4.5vw,3.2rem);line-height:1.1;letter-spacing:-.02em}
+  h1 em{font-style:normal;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;color:transparent}
+  .hero p{color:var(--muted);margin-top:14px;font-size:1.05rem}
+  .layout{display:grid;grid-template-columns:1.15fr 1fr;gap:24px;align-items:start}
+  @media(max-width:900px){.layout{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:26px;backdrop-filter:blur(14px)}
+  label{display:block;font-weight:600;margin-bottom:6px}
+  .hint{color:var(--muted);font-size:.85rem;margin-bottom:10px}
+  input,textarea{width:100%;background:rgba(0,0,0,.28);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:14px 16px;font:inherit;transition:.2s;resize:vertical}
+  input:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px rgba(124,92,255,.18)}
+  textarea{min-height:210px;margin-bottom:20px}
+  input{margin-bottom:22px}
+  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  button.primary{background:linear-gradient(135deg,var(--accent),#5b8bff);border:0;color:#fff;font:600 1rem Inter;padding:14px 28px;border-radius:12px;cursor:pointer;transition:.2s;box-shadow:0 8px 28px rgba(124,92,255,.4)}
+  button.primary:hover{transform:translateY(-2px)}
+  button.primary:disabled{opacity:.6;cursor:wait;transform:none}
+  button.ghost{background:transparent;border:1px solid var(--border);color:var(--muted);font:500 .85rem Inter;padding:10px 14px;border-radius:999px;cursor:pointer;transition:.2s}
+  button.ghost:hover{color:var(--text);border-color:var(--accent)}
+  .empty{text-align:center;color:var(--muted);padding:60px 10px}
+  .empty .big{font-size:3rem;margin-bottom:12px}
+  .hidden,.modal.hidden{display:none !important}
+  .verdict{display:flex;align-items:center;gap:22px;margin-bottom:18px}
+  .ring{--p:0;--c:var(--good);width:104px;height:104px;border-radius:50%;flex:none;display:grid;place-items:center;
+        background:conic-gradient(var(--c) calc(var(--p)*1%),rgba(255,255,255,.08) 0);transition:.6s}
+  .ring b{width:82px;height:82px;border-radius:50%;background:#12172b;display:grid;place-items:center;font:700 1.6rem 'Space Grotesk'}
+  .verdict h2{font-family:'Space Grotesk';font-size:1.6rem}
+  .verdict p{color:var(--muted);margin-top:4px;font-size:.95rem}
+  .tips{list-style:none;margin:6px 0 4px}
+  .tips li{display:flex;gap:10px;padding:11px 0;border-top:1px solid var(--border);font-size:.95rem}
+  .tips li::before{content:"✦";color:var(--warn)}
+  h3{font-family:'Space Grotesk';font-size:1.15rem;margin:24px 0 12px}
+  .expert{display:flex;align-items:center;gap:14px;padding:14px;border:1px solid var(--border);border-radius:14px;margin-bottom:10px;background:rgba(255,255,255,.03);animation:up .5s both;transition:.2s}
+  .expert:hover{transform:translateX(4px);border-color:var(--accent)}
+  .avatar{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-weight:700;flex:none}
+  .expert .info{flex:1}
+  .expert .info b{display:block}
+  .expert .info small{color:var(--muted)}
+  .match{text-align:right;font-weight:700;color:var(--good)}
+  .match small{display:block;color:var(--muted);font-weight:500}
+  .note{padding:14px 16px;border-radius:12px;background:rgba(251,113,133,.1);border:1px solid rgba(251,113,133,.3);color:#fecdd3;margin-top:14px;font-size:.93rem}
+  .spinner{width:18px;height:18px;border:3px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;display:inline-block;vertical-align:-3px;margin-right:8px;animation:spin .7s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1}}
+  .navr{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .navr button{margin:0}
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:10;display:grid;place-items:center;padding:20px}
+  .modal .card{width:100%;max-width:400px;background:#12172b}
+  .modal input,.modal select{margin-bottom:14px}
+  select{width:100%;background:rgba(0,0,0,.28);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:14px 16px;font:inherit}
+  .err{color:var(--bad);font-size:.9rem;margin-bottom:10px}
+  .qitem{border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;background:rgba(255,255,255,.03)}
+  .qitem h4{font-family:'Space Grotesk';font-size:1.05rem;margin-bottom:6px}
+  .qitem p{color:var(--muted);font-size:.9rem;white-space:pre-wrap}
+  .ans{margin-top:12px;padding:12px 14px;border-left:3px solid var(--good);background:rgba(52,211,153,.07);border-radius:8px;white-space:pre-wrap;font-size:.93rem}
+  .ans small{display:block;color:var(--muted);margin-bottom:4px}
+  .badge{display:inline-block;font-size:.75rem;padding:3px 10px;border-radius:999px;background:rgba(124,92,255,.2);margin-top:8px}
+  .badge.ok{background:rgba(52,211,153,.2);color:var(--good)}
+  .qitem textarea{min-height:90px;margin:12px 0 10px}
+  .okmsg{color:var(--good);margin-top:12px;font-size:.93rem}
+</style>
+</head>
+<body>
+<div class="glow g1"></div><div class="glow g2"></div>
+<nav>
+  <div class="logo"><i>?</i>AskWise</div>
+  <div class="navr" id="navr"></div>
+</nav>
+<div class="modal hidden" id="modal"><div class="card">
+  <h3 id="mTitle" style="margin-top:0">Log in</h3>
+  <input id="uName" placeholder="Username" autocomplete="username">
+  <input id="uPass" type="password" placeholder="Password" autocomplete="current-password">
+  <div id="signupOnly" class="hidden">
+    <select id="uRole"><option value="asker">I want to ask questions</option><option value="expert">I'm an expert</option></select>
+    <input id="uExp" type="number" placeholder="Your Expert ID (e.g. from a routed list)" class="hidden">
+  </div>
+  <div class="err" id="mErr"></div>
+  <div class="row"><button class="primary" id="mGo">Log in</button><button class="ghost" id="mSwitch">Need an account?</button><button class="ghost" id="mClose">Cancel</button></div>
+</div></div>
+<main>
+  <section id="dash" class="card hidden" style="margin-bottom:24px"></section>
+  <section class="hero">
+    <h1>Ask a question that gets <em>answered</em></h1>
+    <p>Write your question and we'll tell you how clear it is, then find the experts most likely to help.</p>
+  </section>
+
+  <div class="layout">
+    <section class="card" aria-label="Ask a question">
+      <label for="title">Title</label>
+      <div class="hint">Be specific. Imagine you're asking another person.</div>
+      <input id="title" placeholder="e.g. How do I sort a list of dictionaries by a key in Python?">
+      <label for="body">What are you trying to do?</label>
+      <div class="hint">Explain the problem, what you've tried, and any error messages.</div>
+      <textarea id="body" placeholder="Describe your problem in detail..."></textarea>
+      <div class="row">
+        <button class="primary" id="go">Check my question</button>
+        <button class="ghost" id="ex1">Try a good example</button>
+        <button class="ghost" id="ex2">Try a vague example</button>
+      </div>
+    </section>
+
+    <section class="card" aria-live="polite">
+      <div class="empty" id="empty"><div class="big">💡</div>Your feedback will appear here.</div>
+      <div id="result" class="hidden">
+        <div class="verdict">
+          <div class="ring" id="ring"><b id="score">0</b></div>
+          <div><h2 id="verdict"></h2><p id="summary"></p></div>
+        </div>
+        <ul class="tips" id="tips"></ul>
+        <div id="expertsWrap">
+          <h3>Experts who can help</h3>
+          <div id="experts"></div>
+        </div>
+        <div class="note hidden" id="note">We haven't sent this to any experts yet. Improve your question and check it again.</div>
+        <div id="postWrap" class="hidden" style="margin-top:18px"><button class="primary" id="post">Post to these experts</button><div class="okmsg hidden" id="postOk"></div></div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const COLORS = {HQ:'var(--good)', LQ_EDIT:'var(--warn)', LQ_CLOSE:'var(--bad)'};
+const hues = [265,190,330,150,35,210,0,100];
+
+$('ex1').onclick = () => {
+  $('title').value = 'How do I fix a 404 error in Django REST Framework routers?';
+  $('body').value = "I registered my viewsets with router.register in urls.py, but every endpoint returns 404. DEBUG is True and I included the router urls in the project's urls.py. What could cause this?";
+};
+$('ex2').onclick = () => {
+  $('title').value = 'help me with my code plz urgent!!!';
+  $('body').value = 'its not working i dont know why please help asap';
+};
+
+function matchLabel(m){ return m >= 80 ? 'Excellent match' : m >= 65 ? 'Strong match' : 'Good match'; }
+
+$('go').onclick = async () => {
+  const title = $('title').value.trim(), body = $('body').value.trim();
+  if(!title && !body){ $('title').focus(); return; }
+  const btn = $('go'); btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Checking...';
+  try{
+    const r = await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title,body})});
+    const d = await r.json();
+    $('empty').classList.add('hidden'); $('result').classList.remove('hidden');
+    const ring = $('ring'); ring.style.setProperty('--c', COLORS[d.level]); ring.style.setProperty('--p', d.score);
+    $('score').textContent = d.score;
+    $('verdict').textContent = d.verdict; $('summary').textContent = d.summary;
+    $('tips').innerHTML = d.tips.map(t=>`<li>${t}</li>`).join('');
+    $('expertsWrap').classList.toggle('hidden', !d.routed);
+    $('note').classList.toggle('hidden', d.routed);
+    $('experts').innerHTML = d.experts.map((e,i)=>{
+      const h = hues[(e.id)%hues.length];
+      return `<div class="expert" style="animation-delay:${i*80}ms">
+        <div class="avatar" style="background:hsl(${h} 70% 45% / .25);color:hsl(${h} 90% 75%)">${String(e.id).slice(-2)}</div>
+        <div class="info"><b>Expert #${e.id}</b><small>${e.answers} similar answers · ${e.reputation} helpful votes</small></div>
+        <div class="match">${e.match}%<small>${matchLabel(e.match)}</small></div></div>`;
+    }).join('');
+  }catch(err){ alert('Something went wrong. Is the server running?'); }
+  btn.disabled = false; btn.textContent = 'Check my question';
+};
+
+/* ---------------- accounts, posting, answers ---------------- */
+let me = JSON.parse(localStorage.getItem('me') || 'null');
+let signupMode = false;
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const when = t => new Date(t*1000).toLocaleString();
+
+async function api(path, method='GET', data){
+  const r = await fetch(path,{method,headers:{'Content-Type':'application/json',...(me?{Authorization:'Bearer '+me.token}:{})},body:data?JSON.stringify(data):undefined});
+  const j = await r.json().catch(()=>({}));
+  if(r.status===401 && me){ setMe(null); }
+  if(!r.ok) throw new Error(j.detail || 'Something went wrong');
+  return j;
+}
+
+function setMe(u){
+  me = u; u ? localStorage.setItem('me', JSON.stringify(u)) : localStorage.removeItem('me');
+  renderNav(); loadDash();
+}
+
+function renderNav(){
+  $('navr').innerHTML = me
+    ? `<span style="color:var(--muted);font-size:.9rem">${esc(me.username)} · ${me.role==='expert'?'Expert #'+me.expert_id:'Asker'}</span><button class="ghost" id="refresh">Refresh</button><button class="ghost" id="logout">Log out</button>`
+    : `<button class="ghost" id="openLogin">Log in</button><button class="primary" style="padding:10px 20px" id="openSignup">Sign up</button>`;
+  if(me){ $('logout').onclick = ()=>setMe(null); $('refresh').onclick = loadDash; }
+  else { $('openLogin').onclick = ()=>openModal(false); $('openSignup').onclick = ()=>openModal(true); }
+  $('postWrap').classList.toggle('hidden', !(lastRouted && (!me || me.role==='asker')));
+  const isExpert = !!me && me.role==='expert';
+  document.querySelector('.hero').classList.toggle('hidden', isExpert);
+  document.querySelector('.layout').classList.toggle('hidden', isExpert);
+}
+
+function openModal(signup){
+  signupMode = signup; $('mErr').textContent='';
+  $('mTitle').textContent = signup?'Create account':'Log in';
+  $('mGo').textContent = signup?'Sign up':'Log in';
+  $('mSwitch').textContent = signup?'Have an account?':'Need an account?';
+  $('signupOnly').classList.toggle('hidden', !signup);
+  $('modal').classList.remove('hidden');
+}
+$('mClose').onclick = ()=>$('modal').classList.add('hidden');
+$('mSwitch').onclick = ()=>openModal(!signupMode);
+$('uRole').onchange = ()=>$('uExp').classList.toggle('hidden', $('uRole').value!=='expert');
+$('mGo').onclick = async ()=>{
+  try{
+    const body = {username:$('uName').value.trim(), password:$('uPass').value};
+    if(signupMode){ body.role=$('uRole').value; if(body.role==='expert') body.expert_id=parseInt($('uExp').value); }
+    const u = await api(signupMode?'/api/signup':'/api/login','POST',body);
+    $('modal').classList.add('hidden'); setMe(u);
+  }catch(e){ $('mErr').textContent = e.message; }
+};
+
+let lastRouted = false;
+const _go = $('go').onclick;
+$('go').onclick = async ()=>{ await _go(); lastRouted = !$('expertsWrap').classList.contains('hidden') && !$('result').classList.contains('hidden'); $('postOk').classList.add('hidden'); renderNav(); };
+
+$('post').onclick = async ()=>{
+  if(!me){ openModal(false); return; }
+  try{
+    const d = await api('/api/questions','POST',{title:$('title').value.trim(), body:$('body').value.trim()});
+    $('postOk').textContent = `Posted! Sent to experts ${d.routed_to.map(i=>'#'+i).join(', ')}. Answers will appear under "My Questions" above.`;
+    $('postOk').classList.remove('hidden'); loadDash(); window.scrollTo({top:0,behavior:'smooth'});
+  }catch(e){ alert(e.message); }
+};
+
+async function loadDash(){
+  const box = $('dash');
+  if(!me){ box.classList.add('hidden'); return; }
+  box.classList.remove('hidden');
+  try{
+    if(me.role==='asker'){
+      const qs = await api('/api/my-questions');
+      box.innerHTML = '<h3 style="margin-top:0">My Questions</h3>' + (qs.length ? qs.map(q=>`
+        <div class="qitem"><h4>${esc(q.title)}</h4><p>${esc(q.body)}</p>
+        <span class="badge ${q.answers.length?'ok':''}">${q.answers.length?q.answers.length+' answer(s)':'Waiting for experts #'+q.experts.join(', #')}</span>
+        ${q.answers.map(a=>`<div class="ans"><small>Expert #${a.expert_id} · ${when(a.created)}</small>${esc(a.body)}</div>`).join('')}</div>`).join('')
+        : '<p class="hint">You haven\'t posted anything yet. Check a question below, then post it to experts.</p>');
+    } else {
+      const qs = await api('/api/inbox');
+      box.innerHTML = '<h3 style="margin-top:0">Expert Inbox</h3>' + (qs.length ? qs.map(q=>`
+        <div class="qitem"><h4>${esc(q.title)}</h4><p>${esc(q.body)}</p>
+        ${q.answered?'<span class="badge ok">You answered this</span>':`<textarea id="r${q.id}" placeholder="Write your answer..."></textarea><button class="primary" style="padding:10px 20px" data-q="${q.id}">Send answer</button>`}</div>`).join('')
+        : '<p class="hint">No questions routed to you yet.</p>');
+      box.querySelectorAll('button[data-q]').forEach(b=>b.onclick = async ()=>{
+        try{ await api(`/api/questions/${b.dataset.q}/answers`,'POST',{body:$('r'+b.dataset.q).value}); loadDash(); }
+        catch(e){ alert(e.message); }
+      });
+    }
+  }catch(e){ box.innerHTML = '<p class="hint">'+esc(e.message)+'</p>'; }
+}
+
+renderNav(); loadDash();
+</script>
+</body>
+</html>

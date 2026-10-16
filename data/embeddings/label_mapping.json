@@ -1,0 +1,12 @@
+{
+  "label_to_int": {
+    "HQ": 0,
+    "LQ_EDIT": 1,
+    "LQ_CLOSE": 2
+  },
+  "int_to_label": {
+    "0": "HQ",
+    "1": "LQ_EDIT",
+    "2": "LQ_CLOSE"
+  }
+}
